@@ -7,18 +7,34 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 router.post("/register", async (req, res) => {
-  const { email, password, role } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const { firstName, secondName, firstLastName, secondLastName, phone, email, password, role } = req.body;
+
+  if (!firstName || !firstLastName || !phone || !email || !password) {
+    return res.status(400).json({ error: "Todos los campos obligatorios deben ser completados." });
+  }
 
   try {
-    const user = await prisma.user.create({
-      data: { email, password: hashedPassword, role },
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.user.create({
+      data: {
+        firstName,
+        secondName,
+        firstLastName,
+        secondLastName,
+        phone,
+        email,
+        password: hashedPassword,
+        role,
+      },
     });
-    res.json(user);
+
+    res.status(201).json({ message: "Usuario registrado exitosamente" });
   } catch (error) {
-    res.status(500).json({ error: "User already exists" });
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 });
+
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -28,7 +44,16 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign(
+    { userId: user.id, 
+      email: user.email, 
+      role: user.role, 
+      firstName: user.firstName, 
+      firstLastName: user.firstLastName,  
+      phone: user.phone },
+      process.env.JWT_SECRET,
+    { expiresIn: "2h" }
+  );
   res.json({ token });
 });
 

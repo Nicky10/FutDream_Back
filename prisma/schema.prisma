@@ -14,15 +14,21 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      Role
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  firstName     String
+  secondName    String?  // Opcional
+  firstLastName String
+  secondLastName String? // Opcional
+  phone        String    @unique
+  email        String    @unique
+  password     String
+  role         Role
+  createdAt    DateTime  @default(now())
 
   // Relación con Booking
-  bookings  Booking[]
+  bookings     Booking[]
 }
+
 
 enum Role {
   ADMIN
