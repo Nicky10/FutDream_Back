@@ -50,11 +50,24 @@ router.post("/login", async (req, res) => {
       role: user.role, 
       firstName: user.firstName, 
       firstLastName: user.firstLastName,  
-      phone: user.phone },
+      phone: user.phone,
+      courtNumber: user.courtNumber 
+    },
       process.env.JWT_SECRET,
     { expiresIn: "2h" }
   );
-  res.json({ token });
+  res.json({
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      firstName: user.firstName,
+      firstLastName: user.firstLastName,
+      phone: user.phone,
+      courtNumber: user.courtNumber,
+    }
+  });
 });
 
 module.exports = router;

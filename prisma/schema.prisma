@@ -36,20 +36,31 @@ enum Role {
 }
 
 model Booking {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  date        DateTime
-  hour        String
-  serviceType String   // 🟢 Tipo de servicio (Ej: "futbol_5", "futbol_11", "padel", "bolos")
-  status      String
+  id           String         @id @default(uuid())
+  userId       String
+  date         DateTime
+  hour         String
+  serviceType  ServiceType
+  courtNumber  Int
+  status       BookingStatus  @default(PENDING)  // ← CAMBIO AQUÍ
+  createdAt    DateTime       @default(now())
+
+  user         User           @relation(fields: [userId], references: [id])
 }
 
+
+enum ServiceType {
+  FUTBOL_5
+  FUTBOL_11
+  PADEL
+  BOLOS
+}
 
 
 enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELED
+  COMPLETED
 }
 
